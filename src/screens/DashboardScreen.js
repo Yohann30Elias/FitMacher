@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CircularProgress from '../components/CircularProgress';
 
-const DashboardScreen = ({ steps, heartRate, onNavigate }) => {
+const DashboardScreen = ({ steps, heartRate, isConnected, onNavigate }) => {
   const progress = Math.min((steps / 10000) * 100, 100);
 
   return (
