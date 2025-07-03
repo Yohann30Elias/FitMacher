@@ -5,13 +5,10 @@ import { Accelerometer } from 'expo-sensors';
 
 import DashboardScreen from './src/screens/DashboardScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
-import BluetoothScreen from './src/screens/BluetoothScreen';
 
 export default function App() {
   const [screen, setScreen] = useState('dashboard');
   const [steps, setSteps] = useState(0);
-  const [heartRate, setHeartRate] = useState(78);
-  const [isConnected, setIsConnected] = useState(false);
   const [weeklyData, setWeeklyData] = useState([
     { day: 'Mo', steps: 0 },
     { day: 'Di', steps: 0 },
@@ -21,7 +18,9 @@ export default function App() {
     { day: 'Sa', steps: 0 },
     { day: 'So', steps: 0 }
   ]);
+  const [quote, setQuote] = useState("...");
 
+  // Schritte & Datum laden
   useEffect(() => {
     const loadSteps = async () => {
       try {
@@ -37,41 +36,35 @@ export default function App() {
 
         if (storedSteps && storedDate) {
           if (storedDate === today) {
-            // Schritte von heute übernehmen
             setSteps(parseInt(storedSteps));
           } else {
-            // Schritte vom alten Tag in Verlauf schreiben
             const date = new Date(storedDate);
-            const dayIndex = date.getDay(); // 0=Sonntag
-
+            const dayIndex = date.getDay();
             const newWeeklyData = [...weeklyData];
             const mappedIndex = dayIndex === 0 ? 6 : dayIndex - 1;
             newWeeklyData[mappedIndex] = {
               day: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'][mappedIndex],
               steps: parseInt(storedSteps)
             };
-
             await AsyncStorage.setItem('weeklyData', JSON.stringify(newWeeklyData));
             setWeeklyData(newWeeklyData);
 
-            // Schritte zurücksetzen
             setSteps(0);
             await AsyncStorage.setItem('stepsDate', today);
-            await AsyncStorage.setItem('steps', '0');
           }
         } else {
-          // Kein gespeicherter Stand
           setSteps(0);
           await AsyncStorage.setItem('stepsDate', today);
         }
       } catch (e) {
-        console.log('Fehler beim Laden der Daten:', e);
+        console.log('Fehler beim Laden:', e);
       }
     };
 
     loadSteps();
   }, []);
 
+  // Schritte zählen
   useEffect(() => {
     let stepCount = steps;
     let lastStepTime = Date.now();
@@ -96,12 +89,28 @@ export default function App() {
     return () => subscription.remove();
   }, [steps]);
 
+  // Zitate holen
+  useEffect(() => {
+    const fetchQuote = async () => {
+      try {
+        const response = await fetch('https://zenquotes.io/api/random');
+        const data = await response.json();
+        setQuote(`${data[0].q} — ${data[0].a}`);
+      } catch (e) {
+        console.log('Fehler beim Laden des Zitats:', e);
+      }
+    };
+
+    fetchQuote(); // erstes Laden
+    const interval = setInterval(fetchQuote, 30 * 1000); // alle 30 Sekunden
+    return () => clearInterval(interval);
+  }, []);
+
   if (screen === 'dashboard') {
     return (
       <DashboardScreen
         steps={steps}
-        heartRate={heartRate}
-        isConnected={isConnected}
+        quote={quote}
         onNavigate={setScreen}
       />
     );
@@ -111,16 +120,6 @@ export default function App() {
     return (
       <HistoryScreen
         weeklyData={weeklyData}
-        onBack={() => setScreen('dashboard')}
-      />
-    );
-  }
-
-  if (screen === 'bluetooth') {
-    return (
-      <BluetoothScreen
-        isConnected={isConnected}
-        onConnect={() => setIsConnected(true)}
         onBack={() => setScreen('dashboard')}
       />
     );

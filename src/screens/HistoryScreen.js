@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const HistoryScreen = ({ weeklyData, onBack, onReset }) => (
+const HistoryScreen = ({ weeklyData, onBack }) => (
   <View style={styles.container}>
     <Text style={styles.header}>Verlauf</Text>
     <FlatList
@@ -15,11 +15,7 @@ const HistoryScreen = ({ weeklyData, onBack, onReset }) => (
         </View>
       )}
     />
-    <TouchableOpacity style={styles.button} onPress={onReset}>
-      <Icon name="refresh" size={20} color="#fff" />
-      <Text style={styles.buttonText}>Tag speichern & zurücksetzen</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={[styles.button, { marginTop: 10 }]} onPress={onBack}>
+    <TouchableOpacity style={styles.button} onPress={onBack}>
       <Icon name="arrow-left" size={20} color="#fff" />
       <Text style={styles.buttonText}>Zurück</Text>
     </TouchableOpacity>
