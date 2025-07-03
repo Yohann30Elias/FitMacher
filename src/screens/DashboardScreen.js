@@ -18,7 +18,11 @@ const DashboardScreen = ({ steps, heartRate, isConnected, onNavigate }) => {
         <View style={styles.card}>
           <Icon name="heart-pulse" size={24} color="#EF4444" />
           <Text style={styles.cardLabel}>Puls</Text>
-          <Text style={styles.cardValue}>{heartRate} bpm</Text>
+          {isConnected ? (
+            <Text style={styles.cardValue}>{heartRate} bpm</Text>
+          ) : (
+            <Text style={[styles.cardValue, { color: '#9CA3AF' }]}>nicht verbunden</Text>
+          )}
         </View>
       </View>
       <CircularProgress percentage={progress} />
