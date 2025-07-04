@@ -8,7 +8,7 @@ const DashboardScreen = ({ steps, quote, onNavigate }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>FitBuddy</Text>
+      <Text style={styles.header}>FitMacher</Text>
       <View style={styles.cardContainer}>
         <View style={styles.card}>
           <Icon name="walk" size={24} color="#3B82F6" />
